@@ -35,6 +35,7 @@ public class TestController implements InitializingBean {
     private TestService02 service02;
 
     @RequestRequire(require = "request",parameter = Request.class)
+    //@RequestRequire(require = "name,sex",parameter = String.class)
     @RequestMapping("/demo")
     public Result demo(@RequestBody Request request){
 //        QueryFunctionalInterface service = map.getOrDefault(request.getInputType(),(a,b)->new Result());
