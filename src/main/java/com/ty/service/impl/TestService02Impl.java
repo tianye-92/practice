@@ -20,8 +20,8 @@ public class TestService02Impl implements TestService02 {
     public Result getResult02(String name,String sex) {
         System.out.println("进入test02实现类");
         Result result = new Result();
-        result.setName(name);
-        result.setSex(sex);
+        result.setErrorCode(name);
+        result.setMsg(sex);
         return result;
     }
 }

@@ -19,8 +19,8 @@ public class TestService01Impl implements TestService01 {
     public Result getResult01(String name,String sex) {
         System.out.println("进入test01实现类");
         Result result = new Result();
-        result.setName(name);
-        result.setSex(sex);
+        result.setErrorCode(name);
+        result.setMsg(sex);
         return result;
     }
 }
