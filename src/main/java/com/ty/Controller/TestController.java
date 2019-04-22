@@ -1,5 +1,6 @@
 package com.ty.Controller;
 
+import com.ty.annotation.RequestRequire;
 import com.ty.functionalInterface.QueryFunctionalInterface;
 import com.ty.model.Request;
 import com.ty.model.Result;
@@ -33,6 +34,7 @@ public class TestController implements InitializingBean {
     @Autowired
     private TestService02 service02;
 
+    @RequestRequire(require = "request",parameter = Request.class)
     @RequestMapping("/demo")
     public Result demo(@RequestBody Request request){
 //        QueryFunctionalInterface service = map.getOrDefault(request.getInputType(),(a,b)->new Result());

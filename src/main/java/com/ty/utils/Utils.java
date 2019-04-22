@@ -1,5 +1,7 @@
 package com.ty.utils;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -8,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Locale;
 
 /**
  * 通用工具类
@@ -131,29 +134,29 @@ public class Utils {
 //	public static String i18n(String str, Object ... param) {
 //		return MessageFormat.format(str, param);
 //	}
-//
-//
-//	/**
-//	 * 获取国际化结果
-//	 *
-//	 * @param str en_us
-//	 * @return
-//	 */
-//	public static String i18n(String str) {
-//		try {
-//			ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-//			HttpServletRequest request = requestAttributes.getRequest();
-//			Locale locale = LocaleContextHolder.getLocale();
-//			String header = request.getHeader("i18n");
-//			if (StringUtils.isNotBlank(header))
-//				locale = new Locale(header.split("_")[0], header.split("_")[1]);
-//			return SpringContextUtil.getApplicationContext().getMessage(str, null, locale);
-//		} catch (Exception e) {
-//			return str;
-//		}
-//	}
-//
-//
+
+
+	/**
+	 * 获取国际化结果
+	 *
+	 * @param str en_us
+	 * @return
+	 */
+	public static String i18n(String str) {
+		try {
+			ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			HttpServletRequest request = requestAttributes.getRequest();
+			Locale locale = LocaleContextHolder.getLocale();
+			String header = request.getHeader("i18n");
+			if (StringUtils.isNotBlank(header))
+				locale = new Locale(header.split("_")[0], header.split("_")[1]);
+			return SpringContextUtil.getApplicationContext().getMessage(str, null, locale);
+		} catch (Exception e) {
+			return str;
+		}
+	}
+
+
 //	/**
 //	 * 百度翻译 中文转英文
 //	 * @return
