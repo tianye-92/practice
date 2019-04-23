@@ -6,6 +6,8 @@ import com.ty.model.Request;
 import com.ty.model.Result;
 import com.ty.service.TestService01;
 import com.ty.service.TestService02;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,7 @@ import java.util.Map;
  * @Version 1.0
  */
 @RestController
+@Api("swaggerController注解")
 public class TestController implements InitializingBean {
 
     private static Map<Integer , QueryFunctionalInterface> map = new HashMap<>();
@@ -37,6 +40,7 @@ public class TestController implements InitializingBean {
     @RequestRequire(require = "request",parameter = Request.class)
     //@RequestRequire(require = "name,sex",parameter = String.class)
     @RequestMapping("/demo")
+    @ApiOperation(value = "方法上的swagger注解", notes = "描述")
     public Result demo(@RequestBody Request request){
 //        QueryFunctionalInterface service = map.getOrDefault(request.getInputType(),(a,b)->new Result());
 //        Result queryResult = service.queryResult(request.getName(), request.getSex());
