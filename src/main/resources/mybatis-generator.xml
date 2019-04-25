@@ -20,8 +20,9 @@
         </commentGenerator>
 
         <!-- 数据库链接URL、用户名、密码 -->
+        <!-- tinyInt1isBit=false 解决生成代码时tinyint(1)变成boolean类型 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://119.23.18.147:3396/supplier"
+                        connectionURL="jdbc:mysql://119.23.18.147:3396/supplier?tinyInt1isBit=false"
                         userId="supplier540"
                         password="supplier540*@#jhDIq">
         </jdbcConnection>
@@ -62,6 +63,6 @@
                enableSelectByExample="false" selectByExampleQueryId="false" >
             <property name="useActualColumnNames" value="false"/>
         </table>
-        
+
     </context>
 </generatorConfiguration>
