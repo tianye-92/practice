@@ -1,20 +1,24 @@
 package com.ty.Controller;
 
+import com.ty.annotation.AspectContrLog;
 import com.ty.annotation.RequestRequire;
+import com.ty.entity.TestTy;
 import com.ty.functionalInterface.QueryFunctionalInterface;
 import com.ty.model.Request;
 import com.ty.model.Result;
+import com.ty.model.TestRequest;
 import com.ty.service.TestService01;
 import com.ty.service.TestService02;
+import com.ty.service.TestTyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +40,9 @@ public class TestController implements InitializingBean {
 
     @Autowired
     private TestService02 service02;
+
+    @Autowired
+    private TestTyService testTyService;
 
     @RequestRequire(require = "request",parameter = Request.class)
     //@RequestRequire(require = "name,sex",parameter = String.class)
@@ -64,4 +71,14 @@ public class TestController implements InitializingBean {
         map.put(2,service02::getResult02);
     }
 
+    @PostMapping("/testDate")
+    public List<TestTy> get(){
+        return testTyService.get();
+    }
+
+    @PostMapping("/add")
+//    @AspectContrLog(descrption = "测试事务", actionType = "ADD")
+    public void get(@RequestBody TestTy testTy){
+        testTyService.add(testTy);
+    }
 }

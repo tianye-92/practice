@@ -5,6 +5,7 @@ package com.ty.model;
 import com.ty.enums.ResultEnum;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 返回消息实体类
@@ -15,6 +16,15 @@ public class Result implements Serializable{
 	private String errorCode;//错误代码
 	private String msg;//返回信息
 	private Object data;//封装返回数据
+	private Date createDate;
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
 	public Result(){
 

@@ -16,7 +16,7 @@
             <!-- 是否添加字段注释 true:是 false：否 -->
             <property name="addRemarkComments" value="true" />
             <!-- 自定义属性 作者名称 -->
-            <property name="author" value="xieyanbin" />
+            <property name="author" value="tianye" />
         </commentGenerator>
 
         <!-- 数据库链接URL、用户名、密码 -->
@@ -40,7 +40,7 @@
         也可以使用“MAVEN”来自动生成，这样生成的代码会在target/generatord-source目录下
         -->
         <!--<javaModelGenerator targetPackage="com.joey.mybaties.test.pojo" targetProject="MAVEN">-->
-        <javaModelGenerator targetPackage="com.rondaful.cloud.supplier.entity" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="com.ty.entity" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
             <!-- 从数据库返回的值被清理前后的空格  -->
             <property name="trimStrings" value="true" />
@@ -52,13 +52,13 @@
         </sqlMapGenerator>
 
         <!-- 对应的Mapper接口类文件 -->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.rondaful.cloud.supplier.mapper" targetProject="src/main/java">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.ty.mapper" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
 
         <!-- 列出要生成代码的所有表，这里配置的是不生成Example文件 -->
-        <table tableName="t_inventory_dynamics" domainObjectName="InventoryDynamics"
+        <table tableName="test-ty" domainObjectName="TestTy"
                enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false" >
             <property name="useActualColumnNames" value="false"/>

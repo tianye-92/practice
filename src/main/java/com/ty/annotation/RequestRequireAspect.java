@@ -32,7 +32,7 @@ public class RequestRequireAspect {
     public RequestRequireAspect() {
     }
 
-    @Pointcut("@annotation(com.rondaful.cloud.commodity.test.RequestRequire)")
+    @Pointcut("@annotation(com.ty.annotation.RequestRequire)")
     public void controllerInteceptor() {
     }
 
