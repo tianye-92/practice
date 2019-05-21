@@ -31,7 +31,7 @@ public class TestTyServiceImpl implements TestTyService {
 
     @Override
 //    @Transactional(rollbackFor = Throwable.class)
-    public void add(TestTy testTy) {
+    public void modify(TestTy testTy) {
         mapper.insert(testTy);
 
         System.out.println("=================");
@@ -41,9 +41,9 @@ public class TestTyServiceImpl implements TestTyService {
         TestTy ty = new TestTy();
         ty.setId(11L);
         ty.setLakersLoc("sdasd");
-        ty.setLakersName(new Date());
-        ty.setQuantity(10L);
-        ty.setSequenceNumber("4876dsad512ds1ad4q6we1qa");
+//        ty.setLakersName(new Date());
+//        ty.setQuantity(10L);
+//        ty.setSequenceNumber("4876dsad512ds1ad4q6we1qa");
         mapper.insert(ty);
 
         System.out.println("=======================");

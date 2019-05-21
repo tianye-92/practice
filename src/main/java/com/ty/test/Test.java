@@ -1,17 +1,17 @@
 package com.ty.test;
 
-import com.alibaba.fastjson.JSON;
-import com.ty.Number.BigDecimalTest;
-import com.ty.functionalInterface.NumberSumFunctionalInterface;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import sun.misc.BASE64Encoder;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -153,7 +153,11 @@ public class Test {
 
     public static void main(String[] args) {
 
-
+        try {
+            System.out.println(encodeBase64File("D:\\invoice_model_zh_CN.xlsx"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
 //        BigDecimal bigDecimal = new BigDecimal("10");
@@ -194,27 +198,27 @@ public class Test {
 //        System.out.println(System.currentTimeMillis());
 //
 //        System.out.println("\"https://blog.csdn.net/king13127/article/details/78455959\"".length());
-        String s = "D:\\ProgramFile\\SogouInput\\readme.txt";
-        System.out.println(s.substring(s.lastIndexOf(File.separatorChar) + 1));
-        System.out.println(s.substring(s.lastIndexOf(File.separatorChar) + 1).substring(s.substring(s.lastIndexOf(File.separatorChar) + 1).lastIndexOf(".") + 1));
-        String valueAddService;
-        Byte t = 1;
-        switch (t) {
-            case 0:
-                System.out.println(0);
-                valueAddService = "world_ease";
-                break;
-            case 1:
-                System.out.println(1);
-                valueAddService = "origin_crt";
-                break;
-            case 2:
-                System.out.println(2);
-                valueAddService = "fumigation";
-                break;
-            default:
-                valueAddService = null;
-        }
+//        String s = "D:\\ProgramFile\\SogouInput\\readme.txt";
+//        System.out.println(s.substring(s.lastIndexOf(File.separatorChar) + 1));
+//        System.out.println(s.substring(s.lastIndexOf(File.separatorChar) + 1).substring(s.substring(s.lastIndexOf(File.separatorChar) + 1).lastIndexOf(".") + 1));
+//        String valueAddService;
+//        Byte t = 1;
+//        switch (t) {
+//            case 0:
+//                System.out.println(0);
+//                valueAddService = "world_ease";
+//                break;
+//            case 1:
+//                System.out.println(1);
+//                valueAddService = "origin_crt";
+//                break;
+//            case 2:
+//                System.out.println(2);
+//                valueAddService = "fumigation";
+//                break;
+//            default:
+//                valueAddService = null;
+//        }
 
 //        String call = "{\"ask\":\"Success\",\"message\":\"Success\",\"data\":[{\"transit_warehouse_code\":\"wh002\",\"transit_warehouse_name\":\"深圳金积嘉仓\"},{\"transit_warehouse_code\":\"wh005\",\"transit_warehouse_name\":\"抚州仓\"},{\"transit_warehouse_code\":\"wh001\",\"transit_warehouse_name\":\"佛山仓\"},{\"transit_warehouse_code\":\"wh003\",\"transit_warehouse_name\":\"广州仓\"},{\"transit_warehouse_code\":\"wh004\",\"transit_warehouse_name\":\"测试仓\"}]}";
 //
@@ -227,22 +231,24 @@ public class Test {
 //        System.out.println(demoTest.getTransitWarehouseCode());
 //        System.out.println(demoTest.getTransitWarehouseName());
 
-        List<Byte> list = new ArrayList<>();
-        list.add(Byte.valueOf("1"));
-        list.add(Byte.valueOf("2"));
-        list.add(Byte.valueOf("3"));
-        list.add(Byte.valueOf("4"));
-        list.add(Byte.valueOf("2"));
-        list.add(Byte.valueOf("1"));
-        List<Byte> list1 = list.stream().filter(l -> l == 1 || l == 2).collect(Collectors.toList());
-
-        System.out.println("test");
-        list1.forEach(System.out::println);
-        Byte value = Byte.valueOf("-1");
-        System.out.println(value);
+//        List<Byte> list = new ArrayList<>();
+//        list.add(Byte.valueOf("1"));
+//        list.add(Byte.valueOf("2"));
+//        list.add(Byte.valueOf("3"));
+//        list.add(Byte.valueOf("4"));
+//        list.add(Byte.valueOf("2"));
+//        list.add(Byte.valueOf("1"));
+//        List<Byte> list1 = list.stream().filter(l -> l == 1 || l == 2).collect(Collectors.toList());
+//
+//        System.out.println("test");
+//        list1.forEach(System.out::println);
+//        Byte value = Byte.valueOf("-1");
+//        System.out.println(value);
 
 //        System.out.println(JSON.toJSONString("{}"));
 //        System.out.println(valueAddService);
+
+
 
     }
 }

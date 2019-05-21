@@ -1,6 +1,8 @@
 package com.ty.test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TODO
@@ -65,17 +67,23 @@ public class Demo {
 
     public static void main(String[] args) {
 
-//        try {
-//            String file = Test.encodeBase64File("D:\\33333333.png");
-//            System.out.println("size:"+file.length());
-//            System.out.println(file);
-//        } catch (Exception e) {
-//            e.printStackTrace();
+//        List<Integer> list = new ArrayList<>();
+//
+//        for (int i = 0; i < 599 ; i++) {
+//            list.add(i);
 //        }
-        String s = "GC_G1149_UK";
-        String[] s1 = s.split("_");
+//
+//        int size = 599;
+        int count = 1;
+//        if (size > 100) {
+//            count = size % 100 == 0 ? size / 100 : size / 100 + 1;
+//        }
 
-        System.out.println(s1[s1.length-1]);
+        for (int i = 0; i < count; i++) {
+//            List<Integer> list1 = list.stream().skip(i * 100).limit(100).collect(Collectors.toList());
+            System.out.println(i);
+        }
+
 
     }
 }

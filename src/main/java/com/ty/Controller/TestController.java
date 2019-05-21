@@ -46,7 +46,7 @@ public class TestController implements InitializingBean {
 
     @RequestRequire(require = "request",parameter = Request.class)
     //@RequestRequire(require = "name,sex",parameter = String.class)
-    @RequestMapping("/demo")
+    @PostMapping("/demo")
     @ApiOperation(value = "方法上的swagger注解", notes = "描述")
     public Result demo(@RequestBody Request request){
 //        QueryFunctionalInterface service = map.getOrDefault(request.getInputType(),(a,b)->new Result());
@@ -79,6 +79,6 @@ public class TestController implements InitializingBean {
     @PostMapping("/add")
 //    @AspectContrLog(descrption = "测试事务", actionType = "ADD")
     public void get(@RequestBody TestTy testTy){
-        testTyService.add(testTy);
+        testTyService.modify(testTy);
     }
 }

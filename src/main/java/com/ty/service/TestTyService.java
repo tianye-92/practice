@@ -17,5 +17,5 @@ public interface TestTyService {
 
     List<TestTy> get();
 
-    void add(TestTy testTy);
+    void modify(TestTy testTy);
 }
