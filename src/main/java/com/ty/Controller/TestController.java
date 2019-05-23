@@ -1,17 +1,24 @@
 package com.ty.Controller;
 
+import com.ty.annotation.AspectContrLog;
+import com.ty.annotation.RequestRequire;
+import com.ty.entity.TestTy;
 import com.ty.functionalInterface.QueryFunctionalInterface;
 import com.ty.model.Request;
 import com.ty.model.Result;
+import com.ty.model.TestRequest;
 import com.ty.service.TestService01;
 import com.ty.service.TestService02;
+import com.ty.service.TestTyService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +30,7 @@ import java.util.Map;
  * @Version 1.0
  */
 @RestController
+@Api("swaggerController注解")
 public class TestController implements InitializingBean {
 
     private static Map<Integer , QueryFunctionalInterface> map = new HashMap<>();
@@ -33,7 +41,13 @@ public class TestController implements InitializingBean {
     @Autowired
     private TestService02 service02;
 
-    @RequestMapping("/demo")
+    @Autowired
+    private TestTyService testTyService;
+
+    @RequestRequire(require = "request",parameter = Request.class)
+    //@RequestRequire(require = "name,sex",parameter = String.class)
+    @PostMapping("/demo")
+    @ApiOperation(value = "方法上的swagger注解", notes = "描述")
     public Result demo(@RequestBody Request request){
 //        QueryFunctionalInterface service = map.getOrDefault(request.getInputType(),(a,b)->new Result());
 //        Result queryResult = service.queryResult(request.getName(), request.getSex());
@@ -57,4 +71,14 @@ public class TestController implements InitializingBean {
         map.put(2,service02::getResult02);
     }
 
+    @PostMapping("/testDate")
+    public List<TestTy> get(){
+        return testTyService.get();
+    }
+
+    @PostMapping("/add")
+//    @AspectContrLog(descrption = "测试事务", actionType = "ADD")
+    public void get(@RequestBody TestTy testTy){
+        testTyService.modify(testTy);
+    }
 }

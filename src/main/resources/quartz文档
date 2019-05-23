@@ -1,0 +1,26 @@
+
+
+quartz定时任务框架：
+    1.需要执行quartz官网提供的SQL脚本，创建11张表，用来存储定时任务相关信息
+    2.quartz框架主要分为：
+        1-> controller：前端调用接口API，增删改查功能
+        2-> service：TaskLogService 用于记录定时任务相关日志   QuartzService 具体定时任务的增删改查
+        3-> QuartzMapper：增删改查相关定时任务
+        4-> remote：远程调用其他服务接口
+        5-> job：BaseQuartzJob 基础job任务，所有job都共用此基础job  GranaryWarrantStatusJob 子job任务，各个子任务job都必须继承基础job任务
+        6-> QuartzJobFactoryConfig：job 实例工厂，解决spring注入问题，如果使用默认会导致spring的@Autowired 无法注入问题
+        7-> QuartzConfig：Quartz框架配置类，配置定时器，调度器，以及数据源等。
+    3.quartz.properties配置文件
+    4.maven依赖：
+                      <dependency>
+                          <groupId>org.quartz-scheduler</groupId>
+                          <artifactId>quartz</artifactId>
+                          <version>2.3.0</version>
+                      </dependency>
+
+                      <dependency>
+                          <groupId>org.quartz-scheduler</groupId>
+                          <artifactId>quartz-jobs</artifactId>
+                          <version>2.3.0</version>
+                      </dependency>
+    5.如果需要解决spring无法注入的问题，必须添加spring-context-supper依赖，此依赖在spring-boot-starter-data-redis依赖中包含，选择其一即可。
