@@ -32,7 +32,7 @@ public class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        out.write("{\"status\":\"error\",\"msg\":\"身份验证失败，请联系管理员!\"}");
+        out.write("{\"status\":\"error\",\"msg\":\"请重新登录!\"}");
         out.flush();
         out.close();
     }

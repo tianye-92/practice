@@ -84,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 })   // 添加自定义manager和自定义securityMetadataSource
                 .and().csrf().disable()     // 关闭 scrf
                 .exceptionHandling()
-//                .authenticationEntryPoint(entryPointUnauthorizedHandler)  // 校验登录Handler
+                .authenticationEntryPoint(entryPointUnauthorizedHandler)  // 校验登录Handler
                 .accessDeniedHandler(authenticationAccessDeniedHandler);      // 校验权限Handler
 
 //           http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class); // JWT Filter 辅助登录信息
