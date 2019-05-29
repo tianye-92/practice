@@ -1,5 +1,6 @@
 package com.ty.security.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -8,7 +9,9 @@ import org.springframework.security.web.access.intercept.FilterInvocationSecurit
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * FilterInvocationSecurityMetadataSource有一个默认的实现类DefaultFilterInvocationSecurityMetadataSource，
@@ -55,9 +58,9 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
     public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
         //获取请求地址
         String requestUrl = ((FilterInvocation) o).getRequestUrl();
-        if ("/login_p".equals(requestUrl)) {
-            return null;
-        }
+//        if ("/login_p".equals(requestUrl)) {
+//            return null;
+//        }
 //        List<Menu> allMenu = menuService.getAllMenu();
 //        for (Menu menu : allMenu) {
 //            if (antPathMatcher.match(menu.getUrl(), requestUrl)&&menu.getRoles().size()>0) {
@@ -70,7 +73,13 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
 //                return SecurityConfig.createList(values);
 //            }
 //        }
-        //没有匹配上的资源，都是登录访问
+        HttpServletRequest request = ((FilterInvocation) o).getHttpRequest();
+        String requestURI = request.getRequestURI();
+        System.out.println("requestURI:"+requestURI);
+        if (StringUtils.equals(requestURI,"/needLogin")){
+            //
+            return null;
+        }
         return SecurityConfig.createList("ROLE_LOGIN");
     }
 
@@ -81,7 +90,7 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return FilterInvocation.class.isAssignableFrom(aClass);
+        return true;
     }
 
 }

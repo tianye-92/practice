@@ -14,8 +14,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -77,8 +79,36 @@ public class TestController implements InitializingBean {
     }
 
     @PostMapping("/add")
-//    @AspectContrLog(descrption = "测试事务", actionType = "ADD")
+    //    @AspectContrLog(descrption = "测试事务", actionType = "ADD")
     public void get(@RequestBody TestTy testTy){
         testTyService.modify(testTy);
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public String update() {
+        System.out.println("=============test=================");
+        return "test";
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.GET)
+    public String update2() {
+        System.out.println("=============update=================");
+        return "update";
+    }
+
+    @RequestMapping(value = "/needLogin", method = RequestMethod.GET)
+    public String update3() {
+        System.out.println("=============needLogin=================");
+        return "needLogin";
+    }
+
+
+    //    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN') AND hasRole('DBA')")
+    @PreAuthorize("hasAnyRole('admin','user')")
+    @RequestMapping(value = "/testLogin", method = RequestMethod.GET)
+    public String testLogin() {
+        System.out.println("=============testLogin=================");
+        return "login success";
     }
 }

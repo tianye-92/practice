@@ -5,9 +5,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * 实现自定义 决策管理器
@@ -41,16 +43,31 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
 
     @Override
     public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
+        System.out.println("===================================判断是否含有权限");
+        if(null== collection || collection.size() <=0) {
+            return;
+        }
+        String needRole;
+        for(Iterator<ConfigAttribute> iter = collection.iterator(); iter.hasNext(); ) {
+            needRole = iter.next().getAttribute();
 
+
+            for(GrantedAuthority ga : authentication.getAuthorities()) {
+                if(needRole.trim().equals(ga.getAuthority().trim())) {
+                    return;
+                }
+            }
+        }
+        throw new AccessDeniedException("no privilege");
     }
 
     @Override
     public boolean supports(ConfigAttribute configAttribute) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return false;
+        return true;
     }
 }
