@@ -24,3 +24,11 @@ quartz定时任务框架：
                           <version>2.3.0</version>
                       </dependency>
     5.如果需要解决spring无法注入的问题，必须添加spring-context-supper依赖，此依赖在spring-boot-starter-data-redis依赖中包含，选择其一即可。
+
+
+    jwt问题:
+        在jwt过滤器中,可以直接做权限的过滤吗?
+        UsernamePasswordAuthenticationToken authentication =
+                                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        在传入userDetails.getAuthorities()时,是否会做鉴权, 还是放入spring security上下文中,后面自定义的鉴权去处理.
+
