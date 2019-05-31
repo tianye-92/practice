@@ -15,6 +15,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -93,6 +95,7 @@ public class TestController implements InitializingBean {
     @RequestMapping(value = "/update", method = RequestMethod.GET)
     public String update2() {
         System.out.println("=============update=================");
+        Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
         return "update";
     }
 

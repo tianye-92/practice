@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
-//@MapperScan("com.ty.mapper")
+@MapperScan("com.ty.mapper")
 @EnableTransactionManagement  // 开启spring事务
 @EnableFeignClients   // 开启feign功能
 public class TyShujujiegouApplication extends WebMvcConfigurerAdapter {

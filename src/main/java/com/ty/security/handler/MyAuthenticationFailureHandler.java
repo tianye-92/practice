@@ -26,7 +26,7 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.setContentType("application/json;charset=utf-8");
+        response.setContentType("text/html;charset=utf-8");
         PrintWriter out = response.getWriter();
         String s = "账号或密码错误，请重新登录！";
         out.write(s);

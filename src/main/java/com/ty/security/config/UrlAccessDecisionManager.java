@@ -6,6 +6,7 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -43,10 +44,11 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
 
     @Override
     public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
+        Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("===================================判断是否含有权限");
-        if(null== collection || collection.size() <=0) {
-            return;
-        }
+//        if(null== collection || collection.size() <=0) {
+//            return;
+//        }
         String needRole;
         for(Iterator<ConfigAttribute> iter = collection.iterator(); iter.hasNext(); ) {
             needRole = iter.next().getAttribute();

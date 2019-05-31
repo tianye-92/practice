@@ -1,5 +1,8 @@
 package com.ty.security.handler;
 
+import com.ty.security.entity.UserEntityDetails;
+import com.ty.utils.JwtTokenUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -20,13 +23,33 @@ import java.io.PrintWriter;
  */
 @Component
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    /**
+     * 用户登录成功之后，返回JwtToken
+     * @param request
+     * @param response
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json;charset=utf-8");
+        response.setContentType("text/html;charset=utf-8");
         PrintWriter out = response.getWriter();
-        String s = "登录成功Handler";
-        out.write(s);
+        // 获取JwtToken
+        String token = jwtTokenUtil.generateToken((UserEntityDetails) authentication.getPrincipal());
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\n\"msg\":\"");
+        builder.append("登录成功Handler");
+        builder.append("\",\n");
+        builder.append("\"token\":\"");
+        builder.append(token);
+        builder.append("\"\n}");
+        out.write(builder.toString());
         out.flush();
         out.close();
     }

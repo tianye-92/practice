@@ -1,19 +1,23 @@
 package com.ty.security.service;
 
+import com.ty.entity.UserEntity;
+import com.ty.mapper.UserEntityMapper;
+import com.ty.security.entity.UserEntityDetails;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户service，需要实现UserDetailsService接口，实现通过账号查询用户信息逻辑
@@ -26,8 +30,8 @@ import java.util.List;
 @Component
 public class UserEntityService implements UserDetailsService {
 
-//    @Autowired
-//    private UserMapper mapper;
+    @Autowired
+    private UserEntityMapper userEntityMapper;
 
 
     /**
@@ -39,11 +43,25 @@ public class UserEntityService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // todo 实现通过账号查询用户信息逻辑
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_LOGIN"));
-        return new User(username, new BCryptPasswordEncoder().encode("123456"), grantedAuthorities);
+        UserEntity userEntity = userEntityMapper.selectByUsername(username);
+
+        Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
+
+        // 处理用户权限
+        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+        if (StringUtils.isNotBlank(userEntity.getRoles())){
+            String[] split = userEntity.getRoles().split(",");
+            List<String> list = Arrays.asList(split);
+            authorityList = list.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        }
+
+        return new UserEntityDetails(userEntity.getUsername(), userEntity.getPassword(), authorityList);
     }
 
+    public static void main(String[] args) {
 
+        System.out.println(new BCryptPasswordEncoder().encode("123456789"));
+
+    }
 
 }
