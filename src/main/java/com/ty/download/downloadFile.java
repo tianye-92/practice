@@ -1,14 +1,19 @@
 package com.ty.download;
 
+import com.ty.enums.ResultEnum;
+import com.ty.exception.GlobalException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Base64Utils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -21,6 +26,14 @@ import java.util.UUID;
  */
 public class downloadFile {
 
+    /**
+     * 文件类型
+     */
+    private final static String FILE_TYPE = "type";
+    /**
+     * base64转码
+     */
+    private final static String FILE_BASE64 = "base64";
 
     /**
      * 根据文件路径，转码base64
@@ -37,6 +50,67 @@ public class downloadFile {
         return new BASE64Encoder().encode(buffer);
     }
 
+    /**
+     * 获取网络文件类型，并且编码为base64
+     *
+     * @param fileUrl
+     * @return
+     * @throws Exception
+     */
+    private Map<String, String> getFileTypeAndToBase64(String fileUrl) {
+        //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
+        HttpURLConnection conn;
+        Map<String, String> map = new HashMap<>();
+        if (StringUtils.isBlank(fileUrl)) {
+            throw new GlobalException(ResultEnum.RESULT_CODE_100500, "获取网络文件类型地址(url)为空!");
+        }
+        try {
+            URL url = new URL(fileUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            //设置请求方式为"GET"
+            conn.setRequestMethod("GET");
+            //超时响应时间为5秒
+            conn.setConnectTimeout(5 * 1000);
+            // 设置字符编码
+            conn.setRequestProperty("Charset", "UTF-8");
+            // 打开到此 URL 引用的资源的通信链接（如果尚未建立这样的连接）。
+            conn.connect();
+
+            // 文件名
+            String filePathUrl = conn.getURL().getFile();
+            filePathUrl = filePathUrl.replaceAll("[/;]", "\\\\");
+            String fileFullName = filePathUrl.substring(filePathUrl.lastIndexOf(File.separatorChar) + 1);
+            String fileType = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
+            map.put(FILE_TYPE, fileType);
+
+            // 如果上传的是压缩包，需要延迟1-2秒，否则有可能拿不到上传文件，会报FileNotFoundException
+            if (StringUtils.equalsAny(fileType, "rar", "zip")) {
+                Thread.sleep(1000);
+            }
+
+            //通过输入流获取图片数据
+            InputStream inStream = conn.getInputStream();
+            //得到图片的二进制数据，以二进制封装得到数据，具有通用性
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            //创建一个Buffer字符串
+            byte[] buffer = new byte[conn.getContentLength()];
+            //每次读取的字符串长度，如果为-1，代表全部读取完毕
+            int len;
+            //使用一个输入流从buffer里把数据读取出来
+            while ((len = inStream.read(buffer)) != -1) {
+                //用输出流往buffer里写入数据，中间参数代表从哪个位置开始读，len代表读取的长度
+                outStream.write(buffer, 0, len);
+            }
+            //关闭输入流
+            inStream.close();
+            //对字节数组Base64编码
+            map.put(FILE_BASE64, Base64Utils.encodeToString(outStream.toByteArray()));
+            return map;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GlobalException(ResultEnum.RESULT_CODE_100500, "获取网络文件类型，并且编码为base64失败!");
+        }
+    }
     /**
      * 根据base64解码然后下载到客户端
      * @param response
