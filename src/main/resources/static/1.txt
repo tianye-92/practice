@@ -1,0 +1,10 @@
+11111111111111111111111111111111
+
+
+测试springsecurity ：
+
+ @Override
+    public void configure(WebSecurity web) throws Exception {
+        // 配置忽略的请求url
+        web.ignoring().antMatchers("/index.html", "/static/**");
+    }
