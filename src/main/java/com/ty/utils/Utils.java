@@ -41,6 +41,7 @@ public class Utils {
 	 */
 	public static void print(Object object) throws IOException {
 		try {
+            // 从上下文中获取HttpServletRequest
 			ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 			HttpServletRequest request = requestAttributes.getRequest();
 			HttpServletResponse response = requestAttributes.getResponse();
