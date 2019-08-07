@@ -1,75 +1,101 @@
-package com.ty.security.config;
-
-import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.Iterator;
-
-/**
- * 实现自定义 决策管理器
- *
- * @ClassName UrlAccessDecisionManager
- * @Author tianye
- * @Date 2019/5/27 18:02
- * @Version 1.0
- */
-@Component
-public class UrlAccessDecisionManager implements AccessDecisionManager {
-
-    /**
-     * 1.decide方法接收三个参数，其中第一个参数中保存了当前登录用户的角色信息，
-     *   第三个参数则是UrlFilterInvocationSecurityMetadataSource中的getAttributes方法传来的，表示当前请求需要的角色（可能有多个）。
-     *
-     * 2.如果当前请求需要的权限为ROLE_LOGIN则表示登录即可访问，和角色没有关系，此时我需要判断authentication是不是AnonymousAuthenticationToken的一个实例，
-     *   如果是，则表示当前用户没有登录，没有登录就抛一个BadCredentialsException异常，登录了就直接返回，则这个请求将被成功执行。
-     *
-     * 3.遍历collection，同时查看当前用户的角色列表中是否具备需要的权限，如果具备就直接返回，否则就抛异常。
-     *
-     * 4.这里涉及到一个all和any的问题：假设当前用户具备角色A、角色B，当前请求需要角色B、角色C，
-     *   那么是要当前用户要包含所有请求角色才算授权成功还是只要包含一个就算授权成功？我这里采用了第二种方案，即只要包含一个即可。小伙伴可根据自己的实际情况调整decide方法中的逻辑。
-     *
-     *
-     *
-     */
-
-
-
-
-    @Override
-    public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
-        Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("===================================判断是否含有权限");
-//        if(null== collection || collection.size() <=0) {
-//            return;
+//package com.ty.security.config;
+//
+//import com.alibaba.fastjson.JSON;
+//import com.alibaba.fastjson.JSONObject;
+//import com.brandslink.cloud.common.enums.ResponseCodeEnum;
+//import com.brandslink.cloud.common.exception.GlobalException;
+//import org.apache.commons.collections.CollectionUtils;
+//import org.apache.commons.lang3.StringUtils;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.security.access.AccessDecisionManager;
+//import org.springframework.security.access.AccessDeniedException;
+//import org.springframework.security.access.ConfigAttribute;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.web.FilterInvocation;
+//import org.springframework.stereotype.Component;
+//import org.springframework.util.AntPathMatcher;
+//import org.springframework.util.LinkedMultiValueMap;
+//import org.springframework.util.MultiValueMap;
+//import org.springframework.web.client.RestTemplate;
+//
+//import java.util.Collection;
+//import java.util.stream.Collectors;
+//
+///**
+// * 实现自定义 决策管理器 判断是否含有权限
+// *
+// * @ClassName UrlAccessDecisionManager
+// * @Author tianye
+// * @Date 2019/5/27 18:02
+// * @Version 1.0
+// */
+//@Component
+//public class UrlAccessDecisionManager implements AccessDecisionManager {
+//
+//    private static final Logger LOGGER = LoggerFactory.getLogger(UrlAccessDecisionManager.class);
+//
+//    @Value("${system.gateway.address}")
+//    private String address;
+//
+//    @Autowired
+//    private RestTemplate restTemplate;
+//
+//    @Override
+//    public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException {
+//        String requestURI = ((FilterInvocation) o).getHttpRequest().getRequestURI();
+//        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+//        // 如果当前用户没有任何角色，则不能访问任何需要权限的接口
+//        if (CollectionUtils.isEmpty(authorities)) {
+//            LOGGER.debug("当前用户没有任何角色，不能访问任何需要权限的接口!");
+//            throw new AccessDeniedException("没有访问权限");
 //        }
-        String needRole;
-        for(Iterator<ConfigAttribute> iter = collection.iterator(); iter.hasNext(); ) {
-            needRole = iter.next().getAttribute();
-
-
-            for(GrantedAuthority ga : authentication.getAuthorities()) {
-                if(needRole.trim().equals(ga.getAuthority().trim())) {
-                    return;
-                }
-            }
-        }
-        throw new AccessDeniedException("no privilege");
-    }
-
-    @Override
-    public boolean supports(ConfigAttribute configAttribute) {
-        return true;
-    }
-
-    @Override
-    public boolean supports(Class<?> aClass) {
-        return true;
-    }
-}
+//        for (ConfigAttribute configAttribute : collection) {
+//            String needRole = configAttribute.getAttribute();
+//            for (GrantedAuthority ga : authorities) {
+//                if (needRole.trim().equals(ga.getAuthority().trim())) {
+//                    return;
+//                }
+//            }
+//        }
+//        // 支持requestUrl模糊匹配
+//        String authority = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+//        // 通过用户角色id查询所能访问的所有url
+//        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+//        map.add("authority", authority);
+//        ResponseEntity<String> roles = restTemplate.postForEntity(address + "/user/role/getMenusByRoleList", map, String.class);
+//        JSONObject result = JSON.parseObject(roles.getBody());
+//        // 调用接口错误
+//        if (null == result || !(boolean) result.get("success")) {
+//            throw new GlobalException(ResponseCodeEnum.RETURN_CODE_100407);
+//        }
+//        String data = (String) result.get("data");
+//        if (StringUtils.isBlank(data)) {
+//            LOGGER.debug("当前用户所拥有的角色，没有配置模糊匹配的url!");
+//            throw new AccessDeniedException("没有访问权限");
+//        }
+//        String[] split = data.split(",");
+//        AntPathMatcher antPathMatcher = new AntPathMatcher();
+//        for (String str : split) {
+//            if (antPathMatcher.match(str, requestURI)) {
+//                return;
+//            }
+//        }
+//        LOGGER.debug("当前用户没有请求url的权限!");
+//        throw new AccessDeniedException("没有访问权限");
+//    }
+//
+//    @Override
+//    public boolean supports(ConfigAttribute configAttribute) {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean supports(Class<?> aClass) {
+//        return true;
+//    }
+//}

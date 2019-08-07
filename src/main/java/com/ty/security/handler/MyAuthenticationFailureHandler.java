@@ -1,19 +1,22 @@
 package com.ty.security.handler;
 
-import org.springframework.security.core.Authentication;
+import com.brandslink.cloud.common.entity.Result;
+import com.brandslink.cloud.common.enums.ResponseCodeEnum;
+import com.brandslink.cloud.common.utils.Utils;
+import net.sf.json.JSONObject;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
- * 登录成功Handler
+ * 登录失败Handler
  *
  * @ClassName MyAuthenticationSuccessHandler
  * @Author tianye
@@ -24,13 +27,19 @@ import java.io.PrintWriter;
 public class MyAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.setContentType("text/html;charset=utf-8");
-        PrintWriter out = response.getWriter();
-        String s = "账号或密码错误，请重新登录！";
-        out.write(s);
-        out.flush();
-        out.close();
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+        String result;
+        if (exception instanceof BadCredentialsException) {
+            result = "密码不正确，请重新登录!";
+        } else if (exception instanceof InternalAuthenticationServiceException) {
+            result = exception.getMessage();
+        } else if (exception instanceof DisabledException) {
+            result = "账号不可用，请联系管理员启用!";
+        } else {
+            result = "账号或密码不正确，请重新登录!";
+        }
+//        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setContentType("application/json;charset=utf-8");
+        Utils.print(JSONObject.fromObject(new Result(ResponseCodeEnum.RETURN_CODE_100001.getCode(), Utils.translation(result))));
     }
 }

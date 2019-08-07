@@ -1,117 +1,134 @@
-package com.ty.security.config;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-/**
- * FilterInvocationSecurityMetadataSource有一个默认的实现类DefaultFilterInvocationSecurityMetadataSource，
- * 该类的主要功能就是通过当前的请求地址，获取该地址需要的用户角色，我们照猫画虎，自己也定义一个FilterInvocationSecurityMetadataSource
- *
- * @ClassName UrlFilterInvocationSecurityMetadataSource
- * @Author tianye
- * @Date 2019/5/27 17:52
- * @Version 1.0
- */
-@Component
-public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource, InitializingBean {
-
-    /**
-     * 1.一开始注入了MenuService，MenuService的作用是用来查询数据库中url pattern和role的对应关系，
-     * 查询结果是一个List集合，集合中是Menu类，Menu类有两个核心属性，一个是url pattern，即匹配规则(比如/admin/**)，还有一个是List,即这种规则的路径需要哪些角色才能访问。
-     * <p>
-     * 2.我们可以从getAttributes(Object o)方法的参数o中提取出当前的请求url，然后将这个请求url和数据库中查询出来的所有url pattern一一对照，
-     * 看符合哪一个url pattern，然后就获取到该url pattern所对应的角色，当然这个角色可能有多个，所以遍历角色，最后利用SecurityConfig.createList方法来创建一个角色集合。
-     * <p>
-     * 3.第二步的操作中，涉及到一个优先级问题，比如我的地址是/employee/basic/hello,这个地址既能被/employee/**匹配，
-     * 也能被/employee/basic/**匹配，这就要求我们从数据库查询的时候对数据进行排序，将/employee/basic/**类型的url pattern放在集合的前面去比较。
-     * <p>
-     * 4.如果getAttributes(Object o)方法返回null的话，意味着当前这个请求不需要任何角色就能访问，甚至不需要登录。但是在我的整个业务中，
-     * 并不存在这样的请求，我这里的要求是，所有未匹配到的路径，都是认证(登录)后可访问，因此我在这里返回一个ROLE_LOGIN的角色，
-     * 这种角色在我的角色数据库中并不存在，因此我将在下一步的角色比对过程中特殊处理这种角色。
-     * <p>
-     * 5.如果地址是/login_p，这个是登录页，不需要任何角色即可访问，直接返回null。
-     * <p>
-     * 6.getAttributes(Object o)方法返回的集合最终会来到AccessDecisionManager类中，接下来我们再来看AccessDecisionManager类。
-     */
-
+//package com.ty.security.config;
+//
+//import com.alibaba.fastjson.JSON;
+//import com.alibaba.fastjson.JSONObject;
+//import com.brandslink.cloud.common.constant.UserConstant;
+//import com.brandslink.cloud.common.entity.UserEntity;
+//import com.brandslink.cloud.common.enums.ResponseCodeEnum;
+//import com.brandslink.cloud.common.exception.GlobalException;
+//import org.apache.commons.collections.CollectionUtils;
+//import org.apache.commons.lang3.StringUtils;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.beans.factory.InitializingBean;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.security.access.AccessDeniedException;
+//import org.springframework.security.access.ConfigAttribute;
+//import org.springframework.security.access.SecurityConfig;
+//import org.springframework.security.core.AuthenticationException;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.web.FilterInvocation;
+//import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+//import org.springframework.stereotype.Component;
+//import org.springframework.util.LinkedMultiValueMap;
+//import org.springframework.util.MultiValueMap;
+//import org.springframework.web.client.RestTemplate;
+//
+//import java.util.ArrayList;
+//import java.util.Arrays;
+//import java.util.Collection;
+//import java.util.List;
+//
+///**
+// * 通过当前的请求地址，获取该地址需要的用户角色
+// *
+// * @ClassName UrlFilterInvocationSecurityMetadataSource
+// * @Author tianye
+// * @Date 2019/5/27 17:52
+// * @Version 1.0
+// */
+//@Component
+//public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource, InitializingBean {
+//
+//    private static final Logger LOGGER = LoggerFactory.getLogger(UrlFilterInvocationSecurityMetadataSource.class);
+//
+//    /**
+//     * 首页免鉴权接口集合
+//     */
+//    private static final List<String> urls = new ArrayList<>();
+//
+//    @Value("${system.gateway.address}")
+//    private String address;
+//
 //    @Autowired
-//    MenuService menuService;
-    AntPathMatcher antPathMatcher = new AntPathMatcher();
-
-    private static final List<String> urls = new ArrayList<>();
-
-    @Value("${system.login.urls}")
-    private String loginUrls;
-
-    @Override
-    public void afterPropertiesSet() {
-        String[] split = loginUrls.split(",");
-        urls.addAll(Arrays.asList(split));
-    }
-
-    /**
-     * 主要责任就是当访问一个url时返回这个url所需要的访问权限
-     *
-     * @param o
-     * @return
-     * @throws IllegalArgumentException
-     */
-    @Override
-    public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-        //获取请求地址
-        String requestUrl = ((FilterInvocation) o).getRequestUrl();
-//        if ("/login_p".equals(requestUrl)) {
+//    private RestTemplate restTemplate;
+//
+//    @Value("${system.default.request.url}")
+//    private String defaultRequestUrl;
+//
+//    @Override
+//    public void afterPropertiesSet() {
+//        if (StringUtils.isNotBlank(defaultRequestUrl)) {
+//            String[] split = defaultRequestUrl.replaceAll(" ", "").split(",");
+//            urls.addAll(Arrays.asList(split));
+//        }
+//    }
+//
+//    /**
+//     * 主要责任就是当访问一个url时返回这个url所需要的访问权限
+//     *
+//     * @param o
+//     * @return
+//     * @throws IllegalArgumentException
+//     */
+//    @Override
+//    public Collection<ConfigAttribute> getAttributes(Object o) throws AuthenticationException, AccessDeniedException {
+//        // 内部调用接口放行
+//        String header = ((FilterInvocation) o).getHttpRequest().getHeader(UserConstant.FEIGN_REQUEST_HEADER_NAME);
+//        if (StringUtils.equals(header, UserConstant.FEIGN_REQUEST_HEADER_VALUE)) {
 //            return null;
 //        }
-//        List<Menu> allMenu = menuService.getAllMenu();
-//        for (Menu menu : allMenu) {
-//            if (antPathMatcher.match(menu.getUrl(), requestUrl)&&menu.getRoles().size()>0) {
-//                List<Role> roles = menu.getRoles();
-//                int size = roles.size();
-//                String[] values = new String[size];
-//                for (int i = 0; i < size; i++) {
-//                    values[i] = roles.get(i).getName();
+//
+//        // admin用户直接放行，用于测试
+//        UserEntity userEntity = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        if (StringUtils.equals(userEntity.getUsername(), UserConstant.ADMIN)) {
+//            return null;
+//        }
+//        String requestURI = ((FilterInvocation) o).getHttpRequest().getRequestURI();
+//        // 修改密码接口，只需要登录就可以访问，不需要鉴权
+//        if (StringUtils.equals(requestURI, UserConstant.CHANGE_PASSWORD_URL)) {
+//            return null;
+//        }
+//        // 首页接口，登录即可访问，不需要鉴权
+//        if (CollectionUtils.isNotEmpty(urls)) {
+//            for (String url : urls) {
+//                if (StringUtils.equals(url, requestURI)) {
+//                    return null;
 //                }
-//                return SecurityConfig.createList(values);
 //            }
 //        }
-        Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
-        HttpServletRequest request = ((FilterInvocation) o).getHttpRequest();
-        String requestURI = request.getRequestURI();
-        System.out.println("requestURI:" + requestURI);
-        // 配置不需要鉴权的url
-        for (String url : urls) {
-            if (antPathMatcher.match(url.trim(), requestURI)) {
-                return null;
-            }
-        }
-        return SecurityConfig.createList("ROLE_LOGIN");
-//        return SecurityConfig.createList("ROLE_ANONYMOUS");
-    }
-
-    @Override
-    public Collection<ConfigAttribute> getAllConfigAttributes() {
-        return null;
-    }
-
-    @Override
-    public boolean supports(Class<?> aClass) {
-        return true;
-    }
-}
+//        // 通过请求url查询所需要的角色列表
+//        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+//        map.add("requestUrl", requestURI);
+//        ResponseEntity<String> roles = restTemplate.postForEntity(address + "/user/role/getMenusByRequestUrl", map, String.class);
+//        JSONObject result = JSON.parseObject(roles.getBody());
+//        // 调用接口错误
+//        if (null == result || !(boolean) result.get("success")) {
+//            throw new GlobalException(ResponseCodeEnum.RETURN_CODE_100407);
+//        }
+//        String data = (String) result.get("data");
+//        LOGGER.info("根据url：{},查询所需要的访问权限，角色列表：{}", requestURI, data);
+//        // 获取角色列表
+//        List<Integer> list = JSON.parseArray(data, Integer.class);
+//        LOGGER.info("根据url：{},查询所需要的访问权限，角色列表size：{}", requestURI, list.size());
+//        // 如果返回角色列表为空，返回-1，后续会进行模糊匹配
+//        if (CollectionUtils.isEmpty(list)) {
+//            return SecurityConfig.createList("-1");
+//        }
+//        String[] strings = list.stream().distinct().map(String::valueOf).toArray(String[]::new);
+//        return SecurityConfig.createList(strings);
+//    }
+//
+//    @Override
+//    public Collection<ConfigAttribute> getAllConfigAttributes() {
+//        return null;
+//    }
+//
+//    @Override
+//    public boolean supports(Class<?> aClass) {
+//        return true;
+//    }
+//
+//}
