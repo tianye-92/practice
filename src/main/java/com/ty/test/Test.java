@@ -1,18 +1,12 @@
 package com.ty.test;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import sun.misc.BASE64Encoder;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 测试类
@@ -131,9 +125,9 @@ public class Test {
             inStream.close();
             byte[] data = outStream.toByteArray();
             //对字节数组Base64编码
-            BASE64Encoder encoder = new BASE64Encoder();
+            Base64.Encoder encoder = Base64.getEncoder();
             //返回Base64编码过的字节数组字符串
-            map.put("base64", encoder.encode(data));
+            map.put("base64", encoder.encodeToString(data));
             return map;
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,7 +141,7 @@ public class Test {
         byte[] buffer = new byte[(int) file.length()];
         inputFile.read(buffer);
         inputFile.close();
-        return new BASE64Encoder().encode(buffer);
+        return Base64.getEncoder().encodeToString(buffer);
     }
 
 
@@ -247,7 +241,6 @@ public class Test {
 
 //        System.out.println(JSON.toJSONString("{}"));
 //        System.out.println(valueAddService);
-
 
 
     }

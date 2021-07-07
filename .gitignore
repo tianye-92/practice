@@ -1,0 +1,10 @@
+/.settings/
+/target/
+/.classpath
+/.project
+*.iml
+.idea
+.gitlab-ci.yml
+/check-style.xml
+*/rebel.xml
+*/rebel-remote.xml
