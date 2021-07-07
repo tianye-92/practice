@@ -2,11 +2,10 @@ package com.ty.model;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.RandomStringUtils;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Base64;
 import java.util.Date;
 
 /**
@@ -35,11 +34,11 @@ public class TestRequest {
         byte[] buffer = new byte[(int) file.length()];
         inputFile.read(buffer);
         inputFile.close();
-        return new BASE64Encoder().encode(buffer);
+        return Base64.getEncoder().encodeToString(buffer);
     }
 
     public static String encodeBase64(String base64) throws Exception {
-        byte[] bytes = new BASE64Decoder().decodeBuffer(base64);
+        byte[] bytes = Base64.getDecoder().decode(base64);
 
         return JSON.toJSONString(bytes);
     }
